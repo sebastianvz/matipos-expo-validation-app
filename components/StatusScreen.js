@@ -14,12 +14,20 @@ import * as Device from "expo-device";
 import { AntDesign, FontAwesome } from "@expo/vector-icons";
 
 export default function StatusScreen({ route, navigation }) {
-  const { status } = route.params;
+  const { status, time } = route.params;
+  console.log("etado", route.params);
+  // const status = params.status;
+  // const time_delay = params.time;
 
   const [loading, setloading] = useState(false);
   const [Id, setID] = useState(
     Device.osBuildFingerprint.split(":user")[0].substr(-10)
   );
+
+  useEffect(() => {
+    const timer = setTimeout(() => navigation.navigate("validate"), time);
+    return () => clearTimeout(timer);
+  }, []);
 
   return (
     <ScrollView

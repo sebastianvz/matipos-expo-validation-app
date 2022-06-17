@@ -6,6 +6,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import ConfigScreen from "./components/ConfigScreen";
 import ValidateScreen from "./components/ValidateEntry";
 import StatusScreen from "./components/StatusScreen";
+import DastaScreen from "./components/DataScreen";
 
 const Stack = createNativeStackNavigator();
 export default function App() {
@@ -15,6 +16,7 @@ export default function App() {
         <Stack.Screen name="config" component={ConfigScreen}></Stack.Screen>
         <Stack.Screen name="validate" component={ValidateScreen}></Stack.Screen>
         <Stack.Screen name="status" component={StatusScreen}></Stack.Screen>
+        <Stack.Screen name="data" component={DastaScreen}></Stack.Screen>
       </Stack.Navigator>
     </NavigationContainer>
   );
