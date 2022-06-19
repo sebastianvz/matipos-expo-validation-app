@@ -12,9 +12,11 @@ import {
 } from "react-native";
 import * as Device from "expo-device";
 import { AntDesign, FontAwesome } from "@expo/vector-icons";
+import { Audio } from "expo-av";
 
 export default function StatusScreen({ route, navigation }) {
-  const { status, time } = route.params;
+  const { status, time, message } = route.params;
+  const [sound, setSound] = React.useState();
   console.log("etado", route.params);
   // const status = params.status;
   // const time_delay = params.time;
@@ -29,8 +31,35 @@ export default function StatusScreen({ route, navigation }) {
     return () => clearTimeout(timer);
   }, []);
 
+  async function playSound() {
+    console.log("Loading Sound");
+
+    var source = "";
+    if (status === "1") {
+      source = require("../assets/valid.mp3");
+    } else if (status === "2") {
+      source = require("../assets/invalid.mp3");
+    }
+
+    const { sound } = await Audio.Sound.createAsync(source);
+    setSound(sound);
+    await sound.playAsync();
+  }
+
+  useEffect(() => {
+    playSound();
+  }, []);
+
+  useEffect(() => {
+    return sound
+      ? () => {
+          sound.unloadAsync();
+        }
+      : undefined;
+  }, [sound]);
+
   return (
-    <ScrollView
+    <View
       style={
         status === "1"
           ? styles.container_active
@@ -38,7 +67,6 @@ export default function StatusScreen({ route, navigation }) {
           ? styles.container_bad
           : styles.container_nKnow
       }
-      contentContainerStyle={{ flexGrow: 1, alignItems: "center" }}
     >
       <View style={styles.container_icon}>
         {status === "1" ? (
@@ -51,25 +79,37 @@ export default function StatusScreen({ route, navigation }) {
           <FontAwesome name="exclamation-triangle" size={300} color="white" />
         ) : null}
       </View>
-    </ScrollView>
+      <Text style={styles.message_text}>{message}</Text>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     backgroundColor: "#cb2a8b",
+    alignItems: "center",
+    flex: 1,
+  },
+  message_text: {
+    fontSize: 35,
+    color: "white",
+    textAlign: "center",
+    fontWeight: "bold",
+    marginTop: 35,
   },
   container_active: {
     flex: 1,
+    alignItems: "center",
     backgroundColor: "#00AF12",
   },
   container_bad: {
     flex: 1,
+    alignItems: "center",
     backgroundColor: "red",
   },
   container_nKnow: {
     flex: 1,
+    alignItems: "center",
     backgroundColor: "#C0CA00",
   },
   container_image: {

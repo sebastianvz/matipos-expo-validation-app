@@ -11,7 +11,8 @@ import {
   Image,
 } from "react-native";
 import * as Device from "expo-device";
-import { AntDesign, FontAwesome } from "@expo/vector-icons";
+import { AntDesign, FontAwesome, Feather } from "@expo/vector-icons";
+
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFocusEffect } from "@react-navigation/native";
 
@@ -39,50 +40,56 @@ export default function DastaScreen({ navigation }) {
     }, [])
   );
   return (
-    <ScrollView
-      style={styles.container}
-      contentContainerStyle={{
-        flexGrow: 1,
-        alignItems: "center",
-      }}
-    >
-      <View style={styles.row_table_title}>
-        <View style={styles.field_table_title}>
-          <Text style={styles.field_text_title}>Codigo</Text>
-        </View>
-        <View style={styles.field_table_title}>
-          <Text style={styles.field_text_title}>Fecha</Text>
-        </View>
-        <View style={styles.field_table_title}>
-          <Text style={styles.field_text_title}>Hora</Text>
-        </View>
-        <View style={styles.field_table_title}>
-          <Text style={styles.field_text_title}>Estado</Text>
-        </View>
-      </View>
-
-      {table?.length > 0 &&
-        table.map((item, index) => (
-          <View style={styles.row_table}>
-            <View style={styles.field_table}>
-              <Text style={styles.field_table_text}>{item?.codigo}</Text>
-            </View>
-            <View style={styles.field_table}>
-              <Text style={styles.field_table_text}>{item?.fecha}</Text>
-            </View>
-            <View style={[styles.field_table, { flex: 0.7 }]}>
-              <Text style={styles.field_table_text}>{item?.hora}</Text>
-            </View>
-
-            <View style={[styles.field_table, { flex: 0.3 }]}>
-              <Text style={styles.field_table_text}>{item?.estado}</Text>
-            </View>
+    <View style={styles.container}>
+      <ScrollView
+        style={styles.container}
+        contentContainerStyle={{
+          flexGrow: 1,
+          alignItems: "center",
+        }}
+      >
+        <View style={styles.row_table_title}>
+          <View style={styles.field_table_title}>
+            <Text style={styles.field_text_title}>Codigo</Text>
           </View>
-        ))}
-      <Pressable onPress={delete_table}>
-        <Text> Borrar </Text>
-      </Pressable>
-    </ScrollView>
+          <View style={styles.field_table_title}>
+            <Text style={styles.field_text_title}>Fecha</Text>
+          </View>
+          <View style={styles.field_table_title}>
+            <Text style={styles.field_text_title}>Hora</Text>
+          </View>
+          <View style={styles.field_table_title}>
+            <Text style={styles.field_text_title}>Estado</Text>
+          </View>
+        </View>
+
+        {table?.length > 0 &&
+          table.map((item, index) => (
+            <View style={styles.row_table}>
+              <View style={styles.field_table}>
+                <Text style={styles.field_table_text}>{item?.codigo}</Text>
+              </View>
+              <View style={styles.field_table}>
+                <Text style={styles.field_table_text}>{item?.fecha}</Text>
+              </View>
+              <View style={[styles.field_table, { flex: 0.7 }]}>
+                <Text style={styles.field_table_text}>{item?.hora}</Text>
+              </View>
+
+              <View style={[styles.field_table, { flex: 0.2 }]}>
+                {item?.estado ? (
+                  <FontAwesome name="check" size={20} color="green" />
+                ) : (
+                  <Feather name="x" size={20} color="red" />
+                )}
+              </View>
+            </View>
+          ))}
+        {/* <Pressable onPress={delete_table}>
+          <Text> Borrar </Text>
+        </Pressable> */}
+      </ScrollView>
+    </View>
   );
 }
 
@@ -176,6 +183,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     borderWidth: 2,
     borderColor: "black",
+    justifyContent: "center",
   },
 
   field_table_text: {

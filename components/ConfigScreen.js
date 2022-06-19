@@ -8,11 +8,13 @@ import {
   TextInput,
   Pressable,
   ActivityIndicator,
+  Image,
+  Linking,
 } from "react-native";
 import * as Device from "expo-device";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFocusEffect } from "@react-navigation/native";
-
+import Constants from "expo-constants";
 export default function ConfigScreen({ navigation }) {
   const [loading, setloading] = useState(false);
   const [Id, setID] = useState(
@@ -22,7 +24,9 @@ export default function ConfigScreen({ navigation }) {
   const [url_back, seturl_back] = useState(
     "https://pruebastorniquete.matipos.com/api/Verificacion/Verificar"
   );
-  const [url_image, seturl_image] = useState("");
+  const [url_image, seturl_image] = useState(
+    "https://haciendanapoles.matipos.com/API/ParametrosV01"
+  );
   const [red_time, setred_time] = useState(5000);
   const [green_time, setgreen_time] = useState(5000);
   const [blue_time, setblue_time] = useState(5000);
@@ -43,6 +47,7 @@ export default function ConfigScreen({ navigation }) {
 
     navigation.navigate("validate");
   };
+  const version = Constants.manifest.version;
 
   const get_token = async () => {
     const result = await AsyncStorage.getItem("Manilla_Save_token");
@@ -142,6 +147,19 @@ export default function ConfigScreen({ navigation }) {
           <Text style={styles.title_button}>GUARDAR</Text>
         </Pressable>
       )}
+
+      <Text style={styles.title_version}>Versión: {version}</Text>
+      <Pressable
+        style={styles.container_log}
+        onPress={() => {
+          Linking.openURL("http://devsebastianvz.com/");
+        }}
+      >
+        <Image
+          style={styles.image_logo}
+          source={require("../assets/Sebas_logo_small.png")}
+        />
+      </Pressable>
     </ScrollView>
   );
 }
@@ -151,11 +169,28 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#cb2a8b",
   },
+  container_log: {
+    width: "100%",
+    height: 30,
+    backgroundColor: "#17181a",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    position: "absolute",
+    bottom: 0,
+  },
+
+  image_logo: {
+    flex: 1,
+    width: 70,
+    height: 50,
+    resizeMode: "contain",
+  },
   form_container: {
     width: "100%",
     display: "flex",
     alignItems: "center",
-    marginTop: 19,
+    marginTop: 10,
   },
   text_info: {
     fontSize: 35,
@@ -189,5 +224,14 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     textAlign: "left",
     width: "90%",
+  },
+  title_version: {
+    fontSize: 12,
+    color: "white",
+    fontWeight: "300",
+    textAlign: "center",
+    width: "100%",
+    position: "absolute",
+    bottom: 30,
   },
 });
