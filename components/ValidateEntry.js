@@ -11,6 +11,8 @@ import {
   Image,
   Alert,
   Button,
+  KeyboardAvoidingView,
+  Keyboard,
 } from "react-native";
 import * as Device from "expo-device";
 import { AntDesign, FontAwesome } from "@expo/vector-icons";
@@ -30,6 +32,8 @@ export default function ValidateScreen({ navigation }) {
   const [hasPermission, setHasPermission] = useState(null);
   const [scanned, setScanned] = useState(false);
   const [cam_reader, setreader] = useState(false);
+  const [keybor_touch, setkeybor_touch] = useState(false);
+  const [isKeyboardVisible, setKeyboardVisible] = useState(false);
 
   const askForCameraPermission = () => {
     (async () => {
@@ -62,26 +66,20 @@ export default function ValidateScreen({ navigation }) {
       jsonValue[0] = data_agregate;
     } else {
       jsonValue.push(data_agregate);
+      console.log("holi", jsonValue);
     }
     console.log("json", jsonValue);
     await AsyncStorage.setItem("Manillas_record", JSON.stringify(jsonValue));
   };
 
-  const validate = async (value) => {
-    const url = await AsyncStorage.getItem("Manilla_url");
-    const token = await AsyncStorage.getItem("Manilla_Save_token");
-    const tiempo_verde = await AsyncStorage.getItem("Manilla_tiempo_verde");
+  const validate_repeat_record = async (value, response) => {
     const tiempo_rojo = await AsyncStorage.getItem("Manilla_tiempo_rojo");
-    const token_string = JSON.parse(token);
-    const url_string = JSON.parse(url);
-    const tiempo_verde_value = JSON.parse(tiempo_verde);
     const tiempo_rojo_value = JSON.parse(tiempo_rojo);
-    //verificacion con lista
     var jsonValue = await AsyncStorage.getItem("Manillas_record");
     jsonValue = JSON.parse(jsonValue);
     if (jsonValue != null && value !== "") {
       var time_item = jsonValue.filter((item) => item.codigo === value);
-      if (time_item) {
+      if (time_item?.length > 0) {
         var hour_date = new Date().getHours();
         var min = new Date().getMinutes();
         var hour_init = time_item[0].hora.split(":")[0];
@@ -100,9 +98,27 @@ export default function ValidateScreen({ navigation }) {
           time: tiempo_rojo_value,
           message: mensaje_tiempo,
         });
+        setScanned(false);
         return false;
       }
+      {
+        navigation.navigate("status", {
+          status: "2",
+          time: tiempo_rojo_value,
+          message: response,
+        });
+      }
     }
+  };
+
+  const validate = async (value) => {
+    const url = await AsyncStorage.getItem("Manilla_url");
+    const token = await AsyncStorage.getItem("Manilla_Save_token");
+    const tiempo_verde = await AsyncStorage.getItem("Manilla_tiempo_verde");
+    const token_string = JSON.parse(token);
+    const url_string = JSON.parse(url);
+    const tiempo_verde_value = JSON.parse(tiempo_verde);
+    //verificacion con lista
 
     if (value !== "") {
       setloading(true);
@@ -121,6 +137,7 @@ export default function ValidateScreen({ navigation }) {
         if (response.status === 200) {
           setloading(false);
           return response.json().then((json_response) => {
+            console.log("sda", json_response);
             if (json_response.Estado) {
               navigation.navigate("status", {
                 status: "1",
@@ -129,15 +146,15 @@ export default function ValidateScreen({ navigation }) {
               });
               save_record(value, true);
               setScanned(false);
+              setkeybor_touch(false);
+              Keyboard.dismiss();
               return false;
             } else {
-              navigation.navigate("status", {
-                status: "2",
-                time: tiempo_rojo_value,
-                message: json_response.Respuesta,
-              });
+              validate_repeat_record(value, json_response.Respuesta);
             }
             setScanned(false);
+            setkeybor_touch(false);
+            Keyboard.dismiss();
             return false;
           });
         } else {
@@ -204,11 +221,34 @@ export default function ValidateScreen({ navigation }) {
     navigation.navigate("config");
   };
 
+  useEffect(() => {
+    const keyboardDidShowListener = Keyboard.addListener(
+      "keyboardDidShow",
+      () => {
+        setKeyboardVisible(true); // or some other action
+      }
+    );
+    const keyboardDidHideListener = Keyboard.addListener(
+      "keyboardDidHide",
+      () => {
+        setKeyboardVisible(false); // or some other action
+      }
+    );
+
+    return () => {
+      keyboardDidHideListener.remove();
+      keyboardDidShowListener.remove();
+    };
+  }, []);
+
   useFocusEffect(
     React.useCallback(() => {
       setvalue_entry("");
       get_image();
+      setScanned(false);
+      setreader(false);
       askForCameraPermission();
+
       if (textInputRef.current?.focus) {
         textInputRef.current.focus();
       }
@@ -264,13 +304,17 @@ export default function ValidateScreen({ navigation }) {
             </View>
           ) : (
             <TextInput
-              showSoftInputOnFocus={false}
+              showSoftInputOnFocus={keybor_touch ? true : false}
               autoFocus={true}
               style={styles.input_form}
-              onChangeText={onChangeHandler}
+              onChangeText={
+                isKeyboardVisible ? setvalue_entry : onChangeHandler
+              }
               value={value_entry}
-              placeholder={""}
+              placeholder={"Ingresar código"}
               ref={textInputRef}
+              onPressIn={() => setkeybor_touch(!keybor_touch)}
+              onSubmitEditing={() => validate(value_entry)}
             ></TextInput>
           )}
         </>
@@ -317,10 +361,11 @@ const styles = StyleSheet.create({
   },
   image: {
     width: "auto",
-    height: 250,
+    height: 220,
     borderRadius: 20,
     marginRight: 1,
-    marginTop: 30,
+    marginTop: 10,
+    resizeMode: "contain",
   },
   text_info: {
     fontSize: 35,
@@ -333,13 +378,13 @@ const styles = StyleSheet.create({
     height: 30,
     backgroundColor: "white",
     borderRadius: 5,
-    marginTop: 80,
+    marginTop: 30,
   },
   button_form: {
     width: 50,
     height: 50,
     backgroundColor: "#D8779C",
-    marginTop: 10,
+    marginTop: 8,
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
@@ -353,12 +398,12 @@ const styles = StyleSheet.create({
 
   icon_settig: {
     position: "absolute",
-    right: 20,
+    right: 15,
     top: 30,
   },
   icon_delete: {
     position: "absolute",
-    left: 20,
+    left: 15,
     top: 30,
   },
 });

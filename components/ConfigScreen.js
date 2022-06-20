@@ -18,7 +18,7 @@ import Constants from "expo-constants";
 export default function ConfigScreen({ navigation }) {
   const [loading, setloading] = useState(false);
   const [Id, setID] = useState(
-    Device.osBuildFingerprint.split(":user")[0].substr(-10)
+    Device.osBuildFingerprint.split(":user")[0].substr(-35)
   );
 
   const [url_back, seturl_back] = useState(
@@ -27,9 +27,8 @@ export default function ConfigScreen({ navigation }) {
   const [url_image, seturl_image] = useState(
     "https://haciendanapoles.matipos.com/API/ParametrosV01"
   );
-  const [red_time, setred_time] = useState(5000);
-  const [green_time, setgreen_time] = useState(5000);
-  const [blue_time, setblue_time] = useState(5000);
+  const [red_time, setred_time] = useState(5);
+  const [green_time, setgreen_time] = useState(5);
 
   const save_token = async (token) => {
     await AsyncStorage.setItem("Manilla_Save_token", JSON.stringify(Id));
@@ -40,10 +39,6 @@ export default function ConfigScreen({ navigation }) {
       JSON.stringify(green_time)
     );
     await AsyncStorage.setItem("Manilla_tiempo_rojo", JSON.stringify(red_time));
-    await AsyncStorage.setItem(
-      "Manilla_tiempo_azul",
-      JSON.stringify(blue_time)
-    );
 
     navigation.navigate("validate");
   };
@@ -60,6 +55,7 @@ export default function ConfigScreen({ navigation }) {
 
   useEffect(() => {
     get_token();
+    console.log(Id);
   }, []);
 
   useFocusEffect(
@@ -95,33 +91,25 @@ export default function ConfigScreen({ navigation }) {
         ></TextInput>
       </View>
       <View style={styles.form_container}>
-        <Text style={styles.title_text}>Tiempo en verde</Text>
+        <Text style={styles.title_text}>Tiempo en verde (segundos)</Text>
 
         <TextInput
           keyboardType="numeric"
           style={styles.input_form}
           onChangeText={setgreen_time}
           value={green_time.toString()}
-          placeholder="Tiempo en Verde"
+          placeholder="Tiempo en Verde(segundos)"
         ></TextInput>
       </View>
       <View style={styles.form_container}>
-        <Text style={styles.title_text}>Tiempo en rojo</Text>
+        <Text style={styles.title_text}>Tiempo en rojo (segundos)</Text>
 
         <TextInput
+          keyboardType="numeric"
           style={styles.input_form}
           onChangeText={setred_time}
           value={red_time.toString()}
-          placeholder="TIempo en Rojo"
-        ></TextInput>
-      </View>
-      <View style={styles.form_container}>
-        <Text style={styles.title_text}>Tiempo en azul</Text>
-        <TextInput
-          style={styles.input_form}
-          onChangeText={setblue_time}
-          value={blue_time.toString()}
-          placeholder="Tiempo en azul"
+          placeholder="Tiempo en Rojo(segundos)"
         ></TextInput>
       </View>
       <View style={styles.form_container}>

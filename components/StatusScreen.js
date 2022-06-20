@@ -17,17 +17,12 @@ import { Audio } from "expo-av";
 export default function StatusScreen({ route, navigation }) {
   const { status, time, message } = route.params;
   const [sound, setSound] = React.useState();
-  console.log("etado", route.params);
-  // const status = params.status;
-  // const time_delay = params.time;
-
-  const [loading, setloading] = useState(false);
-  const [Id, setID] = useState(
-    Device.osBuildFingerprint.split(":user")[0].substr(-10)
-  );
 
   useEffect(() => {
-    const timer = setTimeout(() => navigation.navigate("validate"), time);
+    const timer = setTimeout(
+      () => navigation.navigate("validate"),
+      parseInt(time) * 1000
+    );
     return () => clearTimeout(timer);
   }, []);
 
