@@ -21,6 +21,7 @@ import { useFocusEffect } from "@react-navigation/native";
 import { Ionicons, Entypo } from "@expo/vector-icons";
 import { BarCodeScanner } from "expo-barcode-scanner";
 import Modaldelete from "./tools/Modaldelete";
+import NetInfo from "@react-native-community/netinfo";
 
 export default function ValidateScreen({ navigation }) {
   const [loading, setloading] = useState(false);
@@ -34,6 +35,7 @@ export default function ValidateScreen({ navigation }) {
   const [cam_reader, setreader] = useState(false);
   const [keybor_touch, setkeybor_touch] = useState(false);
   const [isKeyboardVisible, setKeyboardVisible] = useState(false);
+  const [netInfo, setNetInfo] = useState(true);
 
   const askForCameraPermission = () => {
     (async () => {
@@ -41,6 +43,16 @@ export default function ValidateScreen({ navigation }) {
       setHasPermission(status === "granted");
     })();
   };
+
+  useEffect(() => {
+    const unsubscribe = NetInfo.addEventListener((state) => {
+      setNetInfo(state.isInternetReachable);
+      // setNetInfo(false);
+    });
+    return () => {
+      unsubscribe();
+    };
+  }, []);
 
   const save_record = async (code, status) => {
     var jsonValue = await AsyncStorage.getItem("Manillas_record");
@@ -79,7 +91,7 @@ export default function ValidateScreen({ navigation }) {
     jsonValue = JSON.parse(jsonValue);
     if (jsonValue != null && value !== "") {
       var time_item = jsonValue.filter((item) => item.codigo === value);
-      if (time_item?.length > 0) {
+      if (time_item?.length >= 0) {
         var hour_date = new Date().getHours();
         var min = new Date().getMinutes();
         var hour_init = time_item[0].hora.split(":")[0];
@@ -101,13 +113,13 @@ export default function ValidateScreen({ navigation }) {
         setScanned(false);
         return false;
       }
-      {
-        navigation.navigate("status", {
-          status: "2",
-          time: tiempo_rojo_value,
-          message: response,
-        });
-      }
+    } else {
+      console.log("este noe sta pasando");
+      navigation.navigate("status", {
+        status: "2",
+        time: tiempo_rojo_value,
+        message: response,
+      });
     }
   };
 
@@ -118,7 +130,21 @@ export default function ValidateScreen({ navigation }) {
     const token_string = JSON.parse(token);
     const url_string = JSON.parse(url);
     const tiempo_verde_value = JSON.parse(tiempo_verde);
+    const tiempo_rojo = await AsyncStorage.getItem("Manilla_tiempo_rojo");
+    const tiempo_rojo_value = JSON.parse(tiempo_rojo);
     //verificacion con lista
+
+    if (!netInfo) {
+      console.log("EY");
+      setloading(false);
+      setScanned(false);
+      navigation.navigate("status", {
+        status: "2",
+        time: tiempo_rojo_value,
+        message: "No tienes conexión a internet",
+      });
+      return false;
+    }
 
     if (value !== "") {
       setloading(true);
@@ -158,16 +184,14 @@ export default function ValidateScreen({ navigation }) {
             return false;
           });
         } else {
-          return response.json().then((json_response) => {
-            setloading(false);
-            setScanned(false);
-            navigation.navigate("status", {
-              status: "2",
-              time: tiempo_rojo_value,
-              message: json_response?.Respuesta,
-            });
-            return false;
+          setloading(false);
+          setScanned(false);
+          navigation.navigate("status", {
+            status: "2",
+            time: tiempo_rojo_value,
+            message: "Servidor no responde",
           });
+          return false;
         }
       });
     }
@@ -221,7 +245,7 @@ export default function ValidateScreen({ navigation }) {
   };
 
   const delete_table = async () => {
-    await AsyncStorage.removeItem("Manillas_record");
+    await AsyncStorage.clear();
     navigation.navigate("config");
   };
 

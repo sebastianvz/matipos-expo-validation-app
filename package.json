@@ -26,7 +26,8 @@
     "react-native": "0.69.0",
     "react-native-sound": "^0.11.2",
     "react-native-web": "0.17.7",
-    "expo-secure-store": "~11.2.0"
+    "expo-secure-store": "~11.2.0",
+    "@react-native-community/netinfo": "8.2.0"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9"

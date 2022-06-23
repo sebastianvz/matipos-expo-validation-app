@@ -47,7 +47,7 @@ export default function ConfigScreen({ navigation }) {
   const get_token = async () => {
     const result = await AsyncStorage.getItem("Manilla_Save_token");
     if (result) {
-      // navigation.navigate("validate");
+      navigation.navigate("validate");
     } else {
       return false;
     }

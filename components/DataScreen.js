@@ -67,7 +67,9 @@ export default function DastaScreen({ navigation }) {
           table.map((item, index) => (
             <View style={styles.row_table}>
               <View style={styles.field_table}>
-                <Text style={styles.field_table_text}>{item?.codigo}</Text>
+                <Text style={styles.field_table_text} numberOfLines={2}>
+                  {item?.codigo}
+                </Text>
               </View>
               <View style={styles.field_table}>
                 <Text style={styles.field_table_text}>{item?.fecha}</Text>
@@ -85,6 +87,7 @@ export default function DastaScreen({ navigation }) {
               </View>
             </View>
           ))}
+
         {/* <Pressable onPress={delete_table}>
           <Text> Borrar </Text>
         </Pressable> */}
@@ -184,6 +187,7 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: "black",
     justifyContent: "center",
+    height: 50,
   },
 
   field_table_text: {
