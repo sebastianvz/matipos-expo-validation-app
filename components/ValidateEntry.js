@@ -161,7 +161,11 @@ export default function ValidateScreen({ navigation }) {
           return response.json().then((json_response) => {
             setloading(false);
             setScanned(false);
-            Alert.alert("Error", json_response);
+            navigation.navigate("status", {
+              status: "2",
+              time: tiempo_rojo_value,
+              message: json_response?.Respuesta,
+            });
             return false;
           });
         }
@@ -282,6 +286,7 @@ export default function ValidateScreen({ navigation }) {
             <Ionicons name="settings" size={30} color="white" />
           </Pressable>
           <Text style={styles.text_info}>Escanear Códigos</Text>
+
           <View style={styles.container_image}>
             {img_base64 ? (
               <Image
@@ -295,6 +300,7 @@ export default function ValidateScreen({ navigation }) {
               />
             )}
           </View>
+
           {cam_reader ? (
             <View style={styles.barcodebox}>
               <BarCodeScanner
@@ -342,13 +348,15 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   container: {
-    flex: 1,
+    display: "flex",
     backgroundColor: "#cb2a8b",
-    flexGrow: 1,
+    flex: 1,
     alignItems: "center",
   },
   container_image: {
-    width: "90%",
+    width: "100%",
+    display: "flex",
+    alignItems: "center",
   },
   barcodebox: {
     alignItems: "center",
@@ -360,12 +368,11 @@ const styles = StyleSheet.create({
     backgroundColor: "black",
   },
   image: {
-    width: "auto",
-    height: 220,
+    width: 230,
+    height: 180,
     borderRadius: 20,
     marginRight: 1,
-    marginTop: 10,
-    resizeMode: "contain",
+    marginTop: 20,
   },
   text_info: {
     fontSize: 35,

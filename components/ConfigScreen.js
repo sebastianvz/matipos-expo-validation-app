@@ -15,11 +15,11 @@ import * as Device from "expo-device";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFocusEffect } from "@react-navigation/native";
 import Constants from "expo-constants";
+import * as Application from "expo-application";
+
 export default function ConfigScreen({ navigation }) {
   const [loading, setloading] = useState(false);
-  const [Id, setID] = useState(
-    Device.osBuildFingerprint.split(":user")[0].substr(-35)
-  );
+  const [Id, setID] = useState(Application.androidId);
 
   const [url_back, seturl_back] = useState(
     "https://pruebastorniquete.matipos.com/api/Verificacion/Verificar"
@@ -56,6 +56,7 @@ export default function ConfigScreen({ navigation }) {
   useEffect(() => {
     get_token();
     console.log(Id);
+    setID;
   }, []);
 
   useFocusEffect(
