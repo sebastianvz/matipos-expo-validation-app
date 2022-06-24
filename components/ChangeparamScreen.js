@@ -17,20 +17,16 @@ import { useFocusEffect } from "@react-navigation/native";
 import Constants from "expo-constants";
 import * as Application from "expo-application";
 
-export default function ConfigScreen({ navigation }) {
+export default function ChangeparamScreen({ navigation }) {
   const [loading, setloading] = useState(false);
   const [Id, setID] = useState("");
 
-  const [url_back, seturl_back] = useState(
-    "https://pruebastorniquete.matipos.com/api/Verificacion/Verificar"
-  );
-  const [url_image, seturl_image] = useState(
-    "https://haciendanapoles.matipos.com/API/ParametrosV01"
-  );
-  const [red_time, setred_time] = useState(5);
-  const [green_time, setgreen_time] = useState(5);
+  const [url_back, seturl_back] = useState("");
+  const [url_image, seturl_image] = useState("");
+  const [red_time, setred_time] = useState(1);
+  const [green_time, setgreen_time] = useState(1);
 
-  const save_token = async (token) => {
+  const modify_parameter = async (token) => {
     await AsyncStorage.setItem("Manilla_Save_token", JSON.stringify(Id));
     await AsyncStorage.setItem("Manilla_url", JSON.stringify(url_back));
     await AsyncStorage.setItem("Manilla_imagen", JSON.stringify(url_image));
@@ -44,23 +40,28 @@ export default function ConfigScreen({ navigation }) {
   };
   const version = Constants.manifest.version;
 
-  const get_token = async () => {
-    const result = await AsyncStorage.getItem("Manilla_Save_token");
-    if (result) {
-      navigation.navigate("validate");
-    } else {
-      return false;
-    }
+  const get_params = async () => {
+    const url = await AsyncStorage.getItem("Manilla_url");
+    const url_imagen = await AsyncStorage.getItem("Manilla_imagen");
+    const green_time = await AsyncStorage.getItem("Manilla_tiempo_verde");
+    const red_time = await AsyncStorage.getItem("Manilla_tiempo_rojo");
+    const token = await AsyncStorage.getItem("Manilla_Save_token");
+    seturl_back(JSON.parse(url));
+    seturl_image(JSON.parse(url_imagen));
+    setred_time(JSON.parse(red_time));
+    setgreen_time(JSON.parse(green_time));
+    setID(JSON.parse(token));
   };
 
   useEffect(() => {
-    get_token();
+    get_params();
     console.log(Id);
+    setID;
   }, []);
 
   useFocusEffect(
     React.useCallback(() => {
-      get_token();
+      get_params();
     }, [])
   );
 
@@ -130,7 +131,10 @@ export default function ConfigScreen({ navigation }) {
           color="white"
         ></ActivityIndicator>
       ) : (
-        <Pressable style={styles.button_form} onPress={() => save_token()}>
+        <Pressable
+          style={styles.button_form}
+          onPress={() => modify_parameter()}
+        >
           <Text style={styles.title_button}>GUARDAR</Text>
         </Pressable>
       )}

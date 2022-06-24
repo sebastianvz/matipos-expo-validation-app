@@ -21,12 +21,15 @@ import { useFocusEffect } from "@react-navigation/native";
 import { Ionicons, Entypo } from "@expo/vector-icons";
 import { BarCodeScanner } from "expo-barcode-scanner";
 import Modaldelete from "./tools/Modaldelete";
+import Modalmenu from "./tools/Modalmenu";
 import NetInfo from "@react-native-community/netinfo";
 
 export default function ValidateScreen({ navigation }) {
   const [loading, setloading] = useState(false);
   const [img_base64, setimg_base64] = useState("");
   const [show, setshow] = useState("");
+  const [show_menu, setshow_menu] = useState(false);
+
   const [value_entry, setvalue_entry] = useState("");
   const timeout = useRef(null);
   const textInputRef = useRef({});
@@ -78,7 +81,6 @@ export default function ValidateScreen({ navigation }) {
       jsonValue[0] = data_agregate;
     } else {
       jsonValue.push(data_agregate);
-      console.log("holi", jsonValue);
     }
     console.log("json", jsonValue);
     await AsyncStorage.setItem("Manillas_record", JSON.stringify(jsonValue));
@@ -289,6 +291,11 @@ export default function ValidateScreen({ navigation }) {
         setshow={setshow}
         delete_confirm={delete_table}
       ></Modaldelete>
+      <Modalmenu
+        show={show_menu}
+        setshow={setshow_menu}
+        delete_confirm={delete_table}
+      ></Modalmenu>
       {loading ? (
         <View style={styles.container_loading}>
           <ActivityIndicator
@@ -305,7 +312,7 @@ export default function ValidateScreen({ navigation }) {
           </Pressable>
           <Pressable
             style={styles.icon_settig}
-            onPress={() => navigation.navigate("data")}
+            onPress={() => setshow_menu(true)}
           >
             <Ionicons name="settings" size={30} color="white" />
           </Pressable>
