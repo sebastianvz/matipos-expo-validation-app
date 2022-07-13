@@ -47,6 +47,11 @@ export default function ValidateScreen({ navigation }) {
     })();
   };
 
+  const show_settings = () => {
+    setshow_menu(true);
+    Keyboard.dismiss();
+  };
+
   useEffect(() => {
     const unsubscribe = NetInfo.addEventListener((state) => {
       setNetInfo(state.isInternetReachable);
@@ -106,7 +111,11 @@ export default function ValidateScreen({ navigation }) {
           horas_mesaje = String(horas) + " horas y ";
         }
         var mensaje_tiempo =
-          "Ya escaneado, hace\n" + horas_mesaje + minutos_mesaje;
+          "Ya escaneado, hace\n" +
+          horas_mesaje +
+          minutos_mesaje +
+          "\n" +
+          response;
         navigation.navigate("status", {
           status: "2",
           time: tiempo_rojo_value,
@@ -310,10 +319,7 @@ export default function ValidateScreen({ navigation }) {
           <Pressable style={styles.icon_delete} onPress={() => setshow(true)}>
             <Entypo name="log-out" size={30} color="white" />
           </Pressable>
-          <Pressable
-            style={styles.icon_settig}
-            onPress={() => setshow_menu(true)}
-          >
+          <Pressable style={styles.icon_settig} onPress={() => show_settings()}>
             <Ionicons name="settings" size={30} color="white" />
           </Pressable>
           <Text style={styles.text_info}>Escanear Códigos</Text>
